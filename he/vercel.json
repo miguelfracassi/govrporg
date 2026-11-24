@@ -1,0 +1,18 @@
+{
+ "buildCommand": "python3 build.py",
+ "outputDirectory": "dist",
+ "cleanUrls": true,
+ "trailingSlash": true,
+ "redirects": [
+  {
+   "source": "/pt-br",
+   "destination": "/",
+   "permanent": false
+  },
+  {
+   "source": "/pt-br/",
+   "destination": "/",
+   "permanent": false
+  }
+ ]
+}
