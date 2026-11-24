@@ -295,13 +295,13 @@ TERMOS = [
  "5. O número de candidato é definido pelo cargo (Deputado Federal: 4 números; Deputado Estadual: 5; Senador: 3; Governador: 2; Presidente: 2) e não pode ser igual ao de outro candidato do mesmo cargo.",
  "6. A organização das eleições pode analisar, aprovar, recusar ou cancelar qualquer inscrição, e alterar datas e regras do calendário eleitoral do roleplay, sempre divulgando as mudanças no portal.",
  "7. É proibido fazer campanha com ofensas, discriminação, ameaças, golpes, promessas de dinheiro real ou de itens reais (Robux, contas, etc.) em troca de votos. Quem descumprir poderá perder a candidatura.",
- "8. A imagem do RG-RP e as informações enviadas ficam guardadas apenas para a organização das eleições do roleplay e podem ser apagadas quando o evento terminar.",
+ "8. O e-mail, o Instagram, a imagem do RG-RP e as informações enviadas ficam guardadas apenas para a organização das eleições do roleplay e podem ser apagadas quando o evento terminar.",
  "9. Ao marcar a caixa de aceite, a pessoa concorda com todos os termos acima e confirma que a candidatura é uma brincadeira de roleplay.",
  "Fim dos termos.",
 ]
 INSC_BODY = (
  P("Cadastre a sua candidatura para as Eleições RP. Você vai precisar do seu <a href=\"/pt-br/gerar-rg-rp/\">RG-RP</a>, escolher o cargo, informar o número e ler os termos.") +
- '<div class="rg" id="insc"><ol class="rg-steps" aria-label="Etapas"><li class="on"><span>1</span>RG</li><li><span>2</span>Cargo</li><li><span>3</span>Número</li><li><span>4</span>Termos</li></ol>'
+ '<div class="rg" id="insc"><ol class="rg-steps" aria-label="Etapas"><li class="on"><span>1</span>RG</li><li><span>2</span>Cargo</li><li><span>3</span>Número</li><li><span>4</span>Contato</li><li><span>5</span>Termos</li></ol>'
  '<section data-step="1"><h2>Anexe o seu RG-RP</h2><p>Envie a imagem do RG-RP gerado no portal (PNG ou JPG).</p>'
  '<div class="f"><label>Imagem do RG-RP<input type="file" id="in-rg" accept="image/*"></label></div><img id="in-prev" class="in-prev" alt="Prévia do RG anexado" hidden>'
  '<div class="alert i result" id="in-m1" role="status"></div><div class="rg-actions"><button class="btn b" type="button" id="in-next1">Continuar</button><a class="btn rg-ghost" href="/pt-br/gerar-rg-rp/">Ainda não tenho RG-RP</a></div></section>'
@@ -310,16 +310,18 @@ INSC_BODY = (
  '</div><div class="alert i result" id="in-m2" role="status"></div><div class="rg-actions"><button class="btn b" type="button" id="in-next2">Continuar</button><button class="btn rg-ghost" type="button" id="in-back2">Voltar</button></div></section>'
  '<section data-step="3" hidden><h2>Número do candidato</h2><div class="f" style="max-width:360px"><label><span id="in-num-label">Número</span><input id="in-num" inputmode="numeric" autocomplete="off"></label></div>'
  '<div class="alert i result" id="in-m3" role="status"></div><div class="rg-actions"><button class="btn b" type="button" id="in-next3">Continuar</button><button class="btn rg-ghost" type="button" id="in-back3">Voltar</button></div></section>'
- '<section data-step="4" hidden><h2>Leia os termos</h2><p>Role até o final para poder concordar.</p><div class="terms" id="in-terms" tabindex="0" role="region" aria-label="Termos">' +
+ '<section data-step="4" hidden><h2>Seus contatos</h2><p>Usaremos para falar com você sobre a candidatura.</p><div class="f" style="max-width:420px"><label>E-mail<input id="in-email" type="email" autocomplete="email" placeholder="voce@exemplo.com"></label><label>Instagram<input id="in-insta" autocomplete="off" autocapitalize="none" placeholder="@seu.usuario"></label></div>'
+ '<div class="alert i result" id="in-mc" role="status"></div><div class="rg-actions"><button class="btn b" type="button" id="in-next4">Continuar</button><button class="btn rg-ghost" type="button" id="in-back4c">Voltar</button></div></section>'
+ '<section data-step="5" hidden><h2>Leia os termos</h2><p>Role até o final para poder concordar.</p><div class="terms" id="in-terms" tabindex="0" role="region" aria-label="Termos">' +
  "".join("<p>%s</p>" % t for t in TERMOS) +
  '</div><label class="agree lock" id="in-agree-wrap"><input type="checkbox" id="in-agree" disabled><span>Li e concordo com todos os termos escritos e ditos a partir desse termo de envio para candidato à <b id="in-agree-cargo">(Cargo)</b>.</span></label>'
  '<div class="alert i result" id="in-m4" role="status"></div><div class="rg-actions"><button class="btn b" type="button" id="in-send">Enviar candidatura</button><button class="btn rg-ghost" type="button" id="in-back4">Voltar</button></div></section>'
- '<section data-step="5" hidden><h2>Candidatura enviada!</h2><div class="alert i on">Sua inscrição para <b id="in-ok-cargo"></b>, número <b id="in-ok-num"></b>, foi enviada. Protocolo nº <b id="in-ok-prot"></b>. Guarde esse número.</div><p><a class="btn b" href="/pt-br/eleicoes-rp/">Voltar às Eleições RP</a></p></section></div>'
+ '<section data-step="6" hidden><h2>Candidatura enviada!</h2><div class="alert i on">Sua inscrição para <b id="in-ok-cargo"></b>, número <b id="in-ok-num"></b>, foi enviada. Protocolo nº <b id="in-ok-prot"></b>. Guarde esse número.</div><p><a class="btn b" href="/pt-br/eleicoes-rp/">Voltar às Eleições RP</a></p></section></div>'
 )
 ADM_BODY = (
  '<div id="adm"><div id="adm-login"><p>Área restrita da organização das eleições.</p><form class="f" id="adm-form" style="max-width:320px"><label>Senha<input id="adm-pw" type="password" required autocomplete="current-password" inputmode="numeric"></label><button class="btn b" type="submit">Entrar</button></form><div class="alert i result" id="adm-lmsg" role="status"></div></div>'
  '<div id="adm-panel" hidden><div class="adm-bar"><strong id="adm-count"></strong><select id="adm-filter" aria-label="Filtrar por cargo"><option value="">Todos os cargos</option></select><button class="btn rg-ghost" type="button" id="adm-reload">Atualizar</button></div>'
- '<div class="table"><table><thead><tr><th>#</th><th>Enviado em</th><th>Cargo</th><th>Número</th><th>RG</th></tr></thead><tbody id="adm-body"></tbody></table></div></div>'
+ '<div class="table"><table><thead><tr><th>#</th><th>Enviado em</th><th>Cargo</th><th>Número</th><th>E-mail</th><th>Instagram</th><th>RG</th></tr></thead><tbody id="adm-body"></tbody></table></div></div>'
  '<div class="alert i result" id="adm-msg" role="status"></div>'
  '<div class="adm-modal" id="adm-modal" hidden><div><button type="button" class="btn rg-ghost" id="adm-close">Fechar</button><p id="adm-cap"></p><img id="adm-img" alt="RG anexado"></div></div></div>'
 )
