@@ -1,7 +1,7 @@
 // Inscrições de candidatos (banco Neon da Vercel).
 // Variável de ambiente: DATABASE_URL (a integração Neon da Vercel já cria) e, opcional, ADMIN_PASSWORD (padrão 2015).
 //
-//  POST /api/inscricoes            -> {cargo, numero, rg (dataURL de imagem), aceite}   (público)
+//  POST /api/inscricoes            -> {cargo, numero, rg (dataURL de imagem), email, instagram, aceite}   (público)
 //  GET  /api/inscricoes            -> lista (header x-admin-password)
 //  GET  /api/inscricoes?id=N       -> imagem do RG de uma inscrição (header x-admin-password)
 
@@ -38,6 +38,8 @@ function setup() {
         aceitou_termos BOOLEAN NOT NULL DEFAULT TRUE,
         criado_em TIMESTAMPTZ NOT NULL DEFAULT NOW()
       )`;
+      await q`ALTER TABLE inscricoes ADD COLUMN IF NOT EXISTS email TEXT`;
+      await q`ALTER TABLE inscricoes ADD COLUMN IF NOT EXISTS instagram TEXT`;
       await q`CREATE UNIQUE INDEX IF NOT EXISTS inscricoes_cargo_numero ON inscricoes (cargo, numero)`;
     })().catch((e) => { ready = null; throw e; });
   }
@@ -74,12 +76,16 @@ module.exports = async (req, res) => {
       if (!(cargo in CARGOS)) return send(res, 400, { error: "cargo_invalido" });
       if (!new RegExp("^\\d{" + CARGOS[cargo] + "}$").test(numero)) return send(res, 400, { error: "numero_invalido" });
       if (!/^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+/=]+$/.test(rg) || rg.length > MAX_RG) return send(res, 400, { error: "rg_invalido" });
+      const email = String(b.email || "").trim().slice(0, 200);
+      const instagram = String(b.instagram || "").trim().replace(/^@/, "");
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) return send(res, 400, { error: "email_invalido" });
+      if (!/^[A-Za-z0-9._]{1,30}$/.test(instagram)) return send(res, 400, { error: "instagram_invalido" });
       if (b.aceite !== true) return send(res, 400, { error: "sem_aceite" });
 
       const dup = await q`SELECT 1 FROM inscricoes WHERE cargo = ${cargo} AND numero = ${numero} LIMIT 1`;
       if (dup.length) return send(res, 409, { error: "numero_em_uso" });
       try {
-        const r = await q`INSERT INTO inscricoes (cargo, numero, rg_imagem, aceitou_termos) VALUES (${cargo}, ${numero}, ${rg}, TRUE) RETURNING id`;
+        const r = await q`INSERT INTO inscricoes (cargo, numero, rg_imagem, email, instagram, aceitou_termos) VALUES (${cargo}, ${numero}, ${rg}, ${email}, ${instagram}, TRUE) RETURNING id`;
         return send(res, 201, { ok: true, protocolo: r[0].id });
       } catch (e) {
         if (String(e.message || e).includes("duplicate")) return send(res, 409, { error: "numero_em_uso" });
@@ -95,7 +101,7 @@ module.exports = async (req, res) => {
         const r = await q`SELECT rg_imagem FROM inscricoes WHERE id = ${Number(id)}`;
         return r.length ? send(res, 200, { rg: r[0].rg_imagem }) : send(res, 404, { error: "nao_encontrado" });
       }
-      const rows = await q`SELECT id, cargo, numero, aceitou_termos, criado_em FROM inscricoes ORDER BY id DESC`;
+      const rows = await q`SELECT id, cargo, numero, email, instagram, aceitou_termos, criado_em FROM inscricoes ORDER BY id DESC`;
       return send(res, 200, { total: rows.length, inscricoes: rows });
     }
 
